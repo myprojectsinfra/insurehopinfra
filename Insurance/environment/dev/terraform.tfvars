@@ -1,0 +1,17 @@
+resource_group_name         = "insurance_rg"
+resource_group_location     = "northeurope"
+virtual_network_name        = "insurancevnet"
+virtual_network_location    = "northeurope"
+subnet_name                 = "insurance_subnet"
+public_ip_name              = "my_public_ip"
+address_space               = ["192.168.0.0/16"]
+address_prefixes            = ["192.168.1.0/24"]
+allocation_method           = "Static"
+network_interface_name      = "myNIC"
+network_interface_location  = "northeurope"
+virtual_machine_name        = "my-frontend-machine"
+virtual_machine_location    = "northeurope"
+sql_server_name             = "insurancesqlserver"
+sql_database_name           = "nsurancesqldatabase"
+network_security_group_name = "mynsgsecgroup"
+key_vault_name              = "insurance-locker"
