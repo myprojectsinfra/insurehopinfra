@@ -1,7 +1,3 @@
-variable "subscription_id" {
-  description = "Azure Subscription ID"
-  type        = string
-}
 variable "resource_group_name" {
   description = "The name of the resource group."
   type        = string
@@ -54,11 +50,11 @@ variable "virtual_machine_location" {
   description = "The location of the Virtual Machine."
   type        = string
 }
-variable "sql_server_name" {
+variable "mysql_server_name" {
   description = "The Unique name of the MYSQL Server."
   type        = string
 }
-variable "sql_database_name" {
+variable "mysql_database_name" {
   description = "The Unique name of the MYSQL Database."
   type        = string
 }
