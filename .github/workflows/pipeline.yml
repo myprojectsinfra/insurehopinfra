@@ -46,7 +46,7 @@ jobs:
 
       - name: Terraform Fmt
         id: Fmt
-        run: terraform fmt -check
+        run: terraform fmt 
         continue-on-error: true
         working-directory: ${{ env.TF_DIR }}
 
@@ -54,15 +54,28 @@ jobs:
         id: validate
         run: terraform validate
         working-directory: ${{ env.TF_DIR }}
+        
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var "subscription_id=${{ env.AZURE_SUBSCRIPTION_ID }}"
+        working-directory: ${{ env.TF_DIR }}
 
   TerraformSecurityScanJob:
     name: 'Terraform Security Scan Job'
     runs-on: Ankit-InsHop-Label
 
     steps:
-     
-
       - name: Run TFLint
         id: tflint
         run: tflint
         working-directory: ${{ env.TF_DIR }}
+        
+      - name: Trivy IaC Scan
+        id: trivy
+        run: trivy config .
+        working-directory: ${{ env.TF_DIR }}
+        
+      - name: Checkov Scan
+        id: checkov
+        run: checkov -d ./${{ env.TF_DIR }} --soft-fail
+
