@@ -1,4 +1,5 @@
-name: MyInsureHopInfra 
+name: MyInsureHopInfra
+
 on:
   push:
     branches:
@@ -10,28 +11,25 @@ on:
       - main
       - development
       - 'features/*'
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 env:
   TF_DIR: Insurance/environment/dev/
-  client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 permissions:
   id-token: write
   contents: read
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
-  # This workflow contains a single job called "build"
   TerraformInitJob:
     name: 'Terraform checkout and Init Job'
-    # The type of runner that the job will run on
     runs-on: Ankit-InsHop-Label
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,12 +37,10 @@ jobs:
       - name: Azure Login using OIDC
         uses: azure/login@v1
         with:
-         client-id: ${{ env.client-id }}
-         tenant-id: ${{ env.tenant-id }}
-         subscription-id: ${{ env.subscription-id }}
-          
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
       - name: Terraform Init
-      id: Init
-      run: terraform init -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-      working-directory: ${{ env.TF_DIR }}  # Set the working directory to the "terraform-config" folder
-      
+        id: Init
+        run: terraform init -var "subscription_id=_
