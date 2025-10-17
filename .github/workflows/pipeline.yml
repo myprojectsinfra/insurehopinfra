@@ -52,8 +52,8 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate
-        working-directory: environment/dev/  # Set the working directory to the "terraform-config" folder
-    
+        working-directory: ${{ env.TF_DIR }}  # Set the working directory to the "terraform-config" folder
+        
  TerraformSecurityScanJob:
     name: 'Terraform Security Scan Job'
     runs-on: Ankit-InsHop-Label
