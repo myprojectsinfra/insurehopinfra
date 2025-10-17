@@ -15,6 +15,9 @@ on:
 
 env:
   TF_DIR: Insurance/environment/dev/
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 permissions:
   id-token: write
@@ -24,11 +27,6 @@ jobs:
   TerraformInitJob:
     name: 'Terraform checkout and Init Job'
     runs-on: Ankit-InsHop-Label
-
-    env:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     steps:
       - name: Checkout code
@@ -44,3 +42,23 @@ jobs:
       - name: Terraform Init
         id: Init
         run: terraform init -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+        working-directory: ${{ env.TF_DIR }}
+      - name: Terraform Fmt
+        id: Fmt
+        run: terraform fmt -check
+        continue-on-error: true
+        working-directory: ${{ env.TF_DIR }}  # Set the working directory to the "terraform-config" folder
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: environment/dev/  # Set the working directory to the "terraform-config" folder
+    
+ TerraformSecurityScanJob:
+    name: 'Terraform Security Scan Job'
+    runs-on: Ankit-InsHop-Label
+    steps:
+      - name: TFLint
+        id: tflint
+        run: tflint
+        working-directory: ${{ env.TF_DIR }}
