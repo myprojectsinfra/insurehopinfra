@@ -43,4 +43,4 @@ jobs:
 
       - name: Terraform Init
         id: Init
-        run: terraform init -var "subscription_id=_
+        run: terraform init -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
