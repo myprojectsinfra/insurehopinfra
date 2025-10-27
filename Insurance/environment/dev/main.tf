@@ -16,10 +16,9 @@ module "virtual_network" {
 module "subnet" {
   depends_on           = [module.rg_group, module.virtual_network]
   source               = "../../modules/azurerm_subnet"
-  subnet_name          = var.subnet_name
   virtual_network_name = var.virtual_network_name
   resource_group_name  = var.resource_group_name
-  address_prefixes     = var.address_prefixes
+  subnetsv             = var.subnetsv
 }
 
 module "public_ip" {
@@ -29,12 +28,11 @@ module "public_ip" {
   resource_group_name     = var.resource_group_name
   resource_group_location = var.resource_group_location
   allocation_method       = var.allocation_method
-
 }
 module "network_interface" {
   depends_on                 = [module.rg_group, module.public_ip, module.subnet]
   source                     = "../../modules/azurerm_network_interface"
-  subnet_name                = var.subnet_name
+  subnet_name                = "subnet-web"
   resource_group_name        = var.resource_group_name
   virtual_network_name       = var.virtual_network_name
   public_ip_name             = var.public_ip_name
@@ -43,15 +41,17 @@ module "network_interface" {
 
 }
 module "mysql_server" {
-  depends_on              = [module.rg_group]
+  depends_on              = [module.rg_group, module.virtual_network, module.subnet]
   source                  = "../../modules/azurerm_mysql_flexible_server"
   resource_group_name     = var.resource_group_name
   resource_group_location = var.resource_group_location
   mysql_server_name       = var.mysql_server_name
+  virtual_network_name    = var.virtual_network_name
+  subnet_id               = module.subnet.subnet_id
 
 }
 module "mysql_database" {
-  depends_on          = [module.rg_group, module.mysql_server]
+  depends_on          = [module.rg_group, module.virtual_network, module.subnet, module.mysql_server]
   source              = "../../modules/azurerm_mysql_flexible_database"
   resource_group_name = var.resource_group_name
   mysql_server_name   = var.mysql_server_name

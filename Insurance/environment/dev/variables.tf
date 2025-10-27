@@ -15,8 +15,23 @@ variable "virtual_network_location" {
   type        = string
 }
 variable "subnet_name" {
-  description = "The name of the Subnet."
+  description = "The name of the subnet for nic."
   type        = string
+}
+variable "subnetsv" {
+  description = "The details of the Subnets."
+  type = map(object({
+    subnet_name = string
+
+    address_prefixes = list(string)
+    delegation = optional(object({
+      name = string
+      service_delegation = object({
+        name    = string
+        actions = list(string)
+      })
+    }))
+  }))
 }
 variable "public_ip_name" {
   description = "The name of the Public IP."
@@ -26,10 +41,7 @@ variable "address_space" {
   description = "Address space for Virtual Network."
   type        = list(string)
 }
-variable "address_prefixes" {
-  description = "Address Prefixes for Virtual Network's Subnet."
-  type        = list(string)
-}
+
 variable "allocation_method" {
   description = "The allocation method"
   type        = string

@@ -40,11 +40,34 @@ resource "azurerm_linux_virtual_machine" "frontendVM" {
     version   = "latest"
   }
   custom_data = base64encode(<<-EOF
-        #!/bin/bash
-        sudo apt update
-        sudo apt install -y nginx
-        sudo systemctl enable nginx
-        sudo systemctl start nginx
-      EOF
-      )
+  #!/bin/bash
+  set -e
+
+  # Update package list
+  sudo apt-get update -y
+
+  # Install Apache, PHP, MySQL client, and phpMyAdmin
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apache2 php libapache2-mod-php php-mysql phpmyadmin mysql-client
+
+  # Enable required Apache modules
+  sudo a2enmod php7.4 || true  # adjust PHP version if needed
+  sudo a2enmod rewrite
+
+  # Link phpMyAdmin to the Apache web directory
+  if [ ! -L /var/www/html/phpmyadmin ]; then
+      sudo ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
+  fi
+
+  # Restart Apache to apply changes
+  sudo systemctl restart apache2
+  sudo systemctl enable apache2
+
+  # Create a PHP info test page
+  echo "<?php phpinfo(); ?>" | sudo tee /var/www/html/info.php
+
+  # Adjust permissions
+  sudo chown www-data:www-data /var/www/html/*.php
+  sudo chmod 644 /var/www/html/*.php
+EOF
+)
 }
