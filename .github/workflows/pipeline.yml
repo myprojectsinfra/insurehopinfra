@@ -36,7 +36,11 @@ jobs:
       id: Init
       run: terraform init
       working-directory: ${{ env.working_directory }}  # Set the working directory to the "terraform-config" folder
-    
+
+    - name: Terraform Plan
+      id: Plan
+      run: terraform plan -var="subscription_id=$subscription_id"
+      working-directory: ${{ env.working_directory }}  # Set the working directory to the "terraform-config" folder
 
 
 
