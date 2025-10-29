@@ -1,46 +1,45 @@
-name: "Ankit Kumar GitHub"
+name: "My Project Infra"
 
 on:
-  
   push:
     branches:
       - 'feature/**'
       - 'main'
       - 'hotfix/**'
+  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
+
 env:
   client_id: ${{ secrets.AZURE_CLIENT_ID }}
   tenant_id: ${{ secrets.AZURE_TENANT_ID }}
   subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   working_directory: Insurance/environment/dev/
+
 jobs:
   terraformInit:
     name: Terraform Init
     runs-on: [self-hosted, Ankit-InsHop-Label]
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-   
-    - name: Azure Login using OIDC
-      uses: azure/login@v1
-      with:
-        client-id: ${{ env.client_id }}
-        tenant-id: ${{ env.tenant_id }}
-        subscription-id: ${{ env.subscription_id }}
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Terraform Init
-      id: Init
-      run: terraform init
-      working-directory: ${{ env.working_directory }}  # Set the working directory to the "terraform-config" folder
+      - name: Azure Login using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ env.client_id }}
+          tenant-id: ${{ env.tenant_id }}
+          subscription-id: ${{ env.subscription_id }}
 
-    - name: Terraform Plan
-      id: Plan
-      run: terraform plan -var="subscription_id=$subscription_id"
-      working-directory: ${{ env.working_directory }}  # Set the working directory to the "terraform-config" folder
+      - name: Terraform Init
+        id: Init
+        run: terraform init
+        working-directory: ${{ env.working_directory }}
 
-
-
+      - name: Terraform Plan
+        id: Plan
+        run: terraform plan -var="subscription_id=${{ env.subscription_id }}"
+        working-directory: ${{ env.working_directory }}
